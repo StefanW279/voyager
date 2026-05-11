@@ -24,9 +24,15 @@ export default {
 			let device = devices[index]
 
 			var type = "unified_push";
+			var localUserId: string | null = null;
+
 			if ("data" in device) {
 				if ("type" in device["data"]) {
 					type = device["data"]["type"]
+				}
+
+				if ("local_client_id" in device["data"]) {
+					localUserId = device["data"]["local_client_id"];
 				}
 			}
 
@@ -35,10 +41,10 @@ export default {
 
 			switch (type) {
 				case "fcm":
-					result = await this.notifyFcm(eventId, roomId, key, env)
+					result = await this.notifyFcm(eventId, roomId, key, localUserId, env)
 					break;
 				case "unified_push":
-					result = await this.notifyUnifiedPush(eventId, roomId, key)
+					result = await this.notifyUnifiedPush(eventId, roomId, key, localUserId)
 					break;
 				default:
 					result = {
@@ -54,7 +60,7 @@ export default {
 		return response
 	},
 
-	async notifyUnifiedPush(eventId: string, roomId: string, pushKey: string): Promise<PushGatewayResponse> {
+	async notifyUnifiedPush(eventId: string, roomId: string, pushKey: string, localClientId: string | null): Promise<PushGatewayResponse> {
 
 		var returnValue: PushGatewayResponse = {
 			rejected: []
@@ -79,6 +85,7 @@ export default {
 			"notification": {
 				"event_id": eventId,
 				"room_id": roomId,
+				"local_client_id": localClientId,
 			}
 		}
 
@@ -97,7 +104,7 @@ export default {
 		return returnValue
 	},
 
-	async notifyFcm(eventId: string, roomId: string, userKey: string, env: Env): Promise<PushGatewayResponse> {
+	async notifyFcm(eventId: string, roomId: string, userKey: string, localClientId: string | null, env: Env): Promise<PushGatewayResponse> {
 		const decode = (str: string): string => Buffer.from(str, 'base64').toString('binary')
 		var keyData = JSON.parse(decode(env.FIREBASE_KEY_B64));
 
@@ -138,7 +145,8 @@ export default {
 						"data": {
 							"event_id": eventId,
 							"prio": "high",
-							"room_id": roomId
+							"room_id": roomId,
+							"local_client_id": localClientId,
 						},
 						"token": userKey
 					}
