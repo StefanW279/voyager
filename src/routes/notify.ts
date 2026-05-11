@@ -81,11 +81,20 @@ export default {
 			return returnValue
 		}
 
-		var content = {
+		var content: any = {
 			"notification": {
 				"event_id": eventId,
 				"room_id": roomId,
-				"local_client_id": localClientId,
+			}
+		}
+
+		if (localClientId != null) {
+			content = {
+				"notification": {
+					"event_id": eventId,
+					"room_id": roomId,
+					"local_client_id": localClientId
+				}
 			}
 		}
 
@@ -133,6 +142,21 @@ export default {
 
 		let token = response['access_token']
 
+		var data: any = {
+			"event_id": eventId,
+			"prio": "high",
+			"room_id": roomId
+		};
+
+		if (localClientId != null) {
+			data = {
+				"event_id": eventId,
+				"prio": "high",
+				"room_id": roomId,
+				"local_client_id": localClientId,
+			};
+		}
+
 		response = await (
 			await fetch(`https://fcm.googleapis.com/v1/projects/${env.FCM_PROJECT_ID}/messages:send`, {
 				method: 'POST',
@@ -142,12 +166,7 @@ export default {
 				},
 				body: JSON.stringify({
 					"message": {
-						"data": {
-							"event_id": eventId,
-							"prio": "high",
-							"room_id": roomId,
-							"local_client_id": localClientId,
-						},
+						"data": data,
 						"token": userKey
 					}
 				})
