@@ -2,6 +2,9 @@ import { Env } from "..";
 import { Buffer } from "buffer";
 // @ts-ignore
 import { getTokenFromGCPServiceAccount } from "@sagi.io/workers-jwt";
+import {
+	sendWebPush,
+} from "../web_push.js";
 
 interface PushGatewayResponse {
 	rejected: string[]
@@ -40,6 +43,15 @@ export default {
 			var result: PushGatewayResponse
 
 			switch (type) {
+				case "webpush":
+					result = await this.notifyWebPush(
+						eventId,
+						roomId,
+						key,
+						localUserId,
+						env,
+					);
+					break;
 				case "fcm":
 					result = await this.notifyFcm(eventId, roomId, key, localUserId, env)
 					break;
@@ -111,6 +123,34 @@ export default {
 		}
 
 		return returnValue
+	},
+
+	async notifyWebPush(eventId: string, roomId: string, pushKey: string, localClientId: string | null, env: Env): Promise<PushGatewayResponse> {
+		const result: PushGatewayResponse = {
+			rejected: [],
+		};
+
+		const payload: any = {
+			type: "matrix",
+			event_id: eventId,
+			room_id: roomId,
+		};
+
+		if (localClientId != null) {
+			payload.local_client_id = localClientId;
+		}
+
+		const sent = await sendWebPush(
+			env,
+			pushKey,
+			payload,
+		);
+
+		if (!sent) {
+			result.rejected.push(pushKey);
+		}
+
+		return result;
 	},
 
 	async notifyFcm(eventId: string, roomId: string, userKey: string, localClientId: string | null, env: Env): Promise<PushGatewayResponse> {

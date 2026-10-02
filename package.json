@@ -1,20 +1,25 @@
 {
   "name": "voyager",
-  "version": "0.0.0",
+  "version": "1.0.0",
   "private": true,
+  "type": "module",
   "scripts": {
-    "deploy": "wrangler deploy",
-    "dev": "wrangler dev",
-    "start": "wrangler dev"
-  },
-  "devDependencies": {
-    "@cloudflare/workers-types": "^4.20230419.0",
-    "typescript": "^5.0.4",
-    "wrangler": "^3.0.0"
+    "start": "tsx src/index.ts",
+    "dev": "tsx src/index.ts"
   },
   "dependencies": {
     "@sagi.io/workers-jwt": "^0.0.23",
     "buffer": "^6.0.3",
-    "itty-router": "^4.0.23"
+    "itty-router": "^4.0.23",
+    "web-push": "^3.6.7"
+  },
+  "devDependencies": {
+    "@types/node": "^22.0.0",
+    "@types/web-push": "^3.6.4",
+    "tsx": "^4.0.0",
+    "typescript": "^5.0.4"
+  },
+  "allowScripts": {
+    "esbuild@0.28.2": true
   }
 }

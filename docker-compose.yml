@@ -1,0 +1,20 @@
+services: 
+  commet-push: 
+    build: .
+    container_name: commet-push 
+    restart: unless-stopped 
+    ports: 
+      - "127.0.0.1:8090:8080"
+
+    volumes: 
+      - ./data/:/data 
+
+    environment: 
+      PORT: "8080"
+      DATABASE_PATH: "/data/commet-push.sqlite"
+      VAPID_PUBLIC_KEY: "${VAPID_PUBLIC_KEY}" 
+      VAPID_PRIVATE_KEY: "${VAPID_PRIVATE_KEY}"
+      VAPID_SUBJECT: "${VAPID_SUBJECT}" 
+      FCM_PROJECT_ID: "${FCM_PROJECT_ID}" 
+      FIREBASE_KEY_B64: "${FIREBASE_KEY_B64}" 
+      WEB_CLIENT_ORIGINS: "https://client.kantengewichte.de"
