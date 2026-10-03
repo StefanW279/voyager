@@ -10,7 +10,6 @@
   "dependencies": {
     "@sagi.io/workers-jwt": "^0.0.23",
     "buffer": "^6.0.3",
-    "itty-router": "^4.0.23",
     "web-push": "^3.6.7"
   },
   "devDependencies": {

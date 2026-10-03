@@ -71,7 +71,17 @@ const server = http.createServer(async (nodeRequest, nodeResponse) => {
 					: body,
 		});
 
+		console.log(
+			"Incoming request:",
+			nodeRequest.method,
+			nodeRequest.url,
+		);
+
+		console.log("Calling router...");
+
 		const response = await router.fetch(request, env);
+
+		console.log("Router returned:", response.status);
 
 		nodeResponse.statusCode = response.status;
 
