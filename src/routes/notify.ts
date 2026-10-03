@@ -1,4 +1,4 @@
-import { Env } from "..";
+import { Env } from "../index.js";
 import { Buffer } from "buffer";
 // @ts-ignore
 import { getTokenFromGCPServiceAccount } from "@sagi.io/workers-jwt";
@@ -12,12 +12,27 @@ interface PushGatewayResponse {
 
 export default {
 	async notify(request: Request, env: Env): Promise<any> {
-		var content: any = await request.json()
+		console.log("=== PUSH NOTIFY ===");
+
+		const rawBody = await request.text();
+		console.log("Push request received");
+
+		const content: any = JSON.parse(rawBody);
 		var notification = content['notification']
 
 		var eventId = notification['event_id']
 		var roomId = notification['room_id']
 		var devices = notification['devices']
+
+		console.log(
+			"Push devices:",
+			JSON.stringify(
+				devices.map((device: any) => ({
+					pushkey: device?.pushkey,
+					data: device?.data,
+				}))
+			)
+		);
 
 		var response: PushGatewayResponse = {
 			rejected: []
@@ -68,6 +83,11 @@ export default {
 				response.rejected.push(element);
 			});
 		}
+
+		console.log(
+			"Push gateway response:",
+			JSON.stringify(response)
+		);
 
 		return response
 	},
@@ -212,12 +232,23 @@ export default {
 				})
 			})).json()
 
-		var result: PushGatewayResponse = {
-			rejected: []
-		}
+		const fcmBody = await response.text();
 
-		if ('error' in response) {
-			result.rejected.push(userKey)
+		console.log(
+			"FCM response:",
+			JSON.stringify({
+				status: response.status,
+				ok: response.ok,
+				body: fcmBody,
+			})
+		);
+
+		let result: PushGatewayResponse = {
+			rejected: [],
+		};
+
+		if (!response.ok) {
+			result.rejected.push(userKey);
 		}
 
 		return result;
