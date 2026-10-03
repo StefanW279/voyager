@@ -217,28 +217,30 @@ export default {
 			};
 		}
 
-		response = await (
-			await fetch(`https://fcm.googleapis.com/v1/projects/${env.FCM_PROJECT_ID}/messages:send`, {
-				method: 'POST',
+		const fcmResponse = await fetch(
+			`https://fcm.googleapis.com/v1/projects/${env.FCM_PROJECT_ID}/messages:send`,
+			{
+				method: "POST",
 				headers: {
 					"Content-Type": "application/json",
-					"Authorization": `Bearer ${token}`
+					"Authorization": `Bearer ${token}`,
 				},
 				body: JSON.stringify({
-					"message": {
-						"data": data,
-						"token": userKey
-					}
-				})
-			})).json()
+					message: {
+						data,
+						token: userKey,
+					},
+				}),
+			}
+		);
 
-		const fcmBody = await response.text();
+		const fcmBody = await fcmResponse.text();
 
 		console.log(
 			"FCM response:",
 			JSON.stringify({
-				status: response.status,
-				ok: response.ok,
+				status: fcmResponse.status,
+				ok: fcmResponse.ok,
 				body: fcmBody,
 			})
 		);
@@ -247,7 +249,7 @@ export default {
 			rejected: [],
 		};
 
-		if (!response.ok) {
+		if (!fcmResponse.ok) {
 			result.rejected.push(userKey);
 		}
 
