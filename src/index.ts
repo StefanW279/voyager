@@ -1,5 +1,6 @@
 import http from "node:http";
 import router from "./router.js";
+import { configureWebPush } from "./web_push.js";
 
 export interface Env {
 	FIREBASE_KEY_B64: string;
@@ -33,6 +34,8 @@ const env: Env = {
 
 	PORT: process.env.PORT ?? "8080",
 };
+
+configureWebPush(env);
 
 const server = http.createServer(async (nodeRequest, nodeResponse) => {
 	try {

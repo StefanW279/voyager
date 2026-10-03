@@ -17,4 +17,4 @@ services:
       VAPID_SUBJECT: "${VAPID_SUBJECT}" 
       FCM_PROJECT_ID: "${FCM_PROJECT_ID}" 
       FIREBASE_KEY_B64: "${FIREBASE_KEY_B64}" 
-      WEB_CLIENT_ORIGINS: "https://client.kantengewichte.de"
+      WEB_CLIENT_ORIGINS: "${WEB_CLIENT_ORIGINS}"

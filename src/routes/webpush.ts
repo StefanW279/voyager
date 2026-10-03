@@ -10,7 +10,7 @@ function allowedOrigin(
 	env: Env,
 ): string | null {
 	const origin = request.headers.get("origin");
-
+	
 	if (origin == null) {
 		return null;
 	}
